@@ -14,7 +14,7 @@ def get_context(query):
         'query_vector': vector,
         'k':50
     }
-    res = es.search(index='review_index', knn=knn, source=['restaurant_name','review'])
+    res = es.search(index='reviews', knn=knn, source=['restaurant_name','review'])
     documents = []
     for doc in res['hits']['hits']:
         documents.append(str(doc['_source']))
