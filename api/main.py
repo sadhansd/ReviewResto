@@ -16,7 +16,7 @@ embed_model = GeminiEmbedding(model_name='models/text-embedding-004', api_key=AP
 Settings.embed_model = embed_model
 
 llm = Gemini(model='models/gemini-1.5-flash', api_key=API_KEY)
-storage_context = StorageContext.from_defaults(persist_dir="notebooks/storage")
+storage_context = StorageContext.from_defaults(persist_dir="ReviewResto/notebooks/storage")
 index = load_index_from_storage(storage_context=storage_context, index_id="vector_index")
 query_engine = index.as_query_engine(llm, similarity_top_k=10)
 
