@@ -114,54 +114,47 @@ def home():
         
         for i in st.session_state['suggestion']:
             with st.expander(f'#### {i['restaurant_name']}'):
+                col1, col2 = st.columns([8,1])
                 summary = get_summary(i['restaurant_name'])
-                st.info(summary['overall_conclusion'])
-                col1, col2, col3 = st.columns(3)
-                col1.subheader("Must try dishes")
-                for i in summary['must_try_dishes']:
-                    col1.write(f'🍽️ {i}')
-                col2.subheader("Highlights")
-                for i in summary['highlights']:
-                    col2.write(f'⭐ {i}')
-                col3.subheader("Things to be noted")
-                for i in summary['things_to_note']:
-                    col3.write(f'⚠️ {i}')
-
-        restaurant = st.sidebar.pills('suggested restaurants', options=res, selection_mode="single")
+                col1.info(summary['overall_conclusion'])
+                col2.metric('Rating',summary['overall_rating'].split(' ')[0])
+                tab1, tab2, tab3 = st.tabs(["Must try dishes", "Highlights", "Things to be noted"])
+                with tab1:
+                    for i in summary['must_try_dishes']:
+                        st.write(f'🍽️ {i}')
+                with tab2:
+                    for i in summary['highlights']:
+                        st.write(f'⭐ {i}')
+                with tab3:
+                    for i in summary['things_to_note']:
+                        st.write(f'⚠️ {i}')
+                st.success("🤖 Ask your queries in the chatbot")
+                
+        restaurant = st.sidebar.pills('select a restaurant and ask queries', options=res, selection_mode="single")
         st.session_state['restaurant'] = restaurant
                 
         if st.session_state['restaurant']:
-            with st.sidebar:
-                for message in st.session_state['messages']:
-                    with st.chat_message(message['role']):
-                        st.markdown(message['content'])
-            
-                if prompt:=st.chat_input('Type here...'):
-                    st.chat_message("user").markdown(prompt)
-                    st.session_state['messages'].append({'role':'user','content':prompt})
-                    response = get_answers(st.session_state['restaurant'], st.session_state['question'])
-                    st.chat_message("assistant").markdown(response)
-                    st.session_state['messages'].append({'role':'assistant','content':response})
+            chat_bot()
         else:
-            st.warning("⚠️ select a valid restaurant")               
-    else:
-        st.warning("⚠️ Enter a valid query")
+            st.success("Click on the suggested restaurants to learn more")               
+
         
 def chat_bot():
-    
-    pass
-        
+    with st.sidebar:
+                st.title(f"Ask questions about {st.session_state['restaurant']}")
+                user_input = st.chat_input("Type your message here...")
+                if user_input:
 
-    
-    
-    
-    # st.sidebar.write(f'Enter your queries about {st.session_state['restaurant']}')
-    # question = st.sidebar.chat_input('type here')
-    # if question:
-    #     st.session_state['question'] = question
-    #     st.session_state['answer'] = get_answers(st.session_state['restaurant'], st.session_state['question'])
-    #     st.sidebar.write(st.session_state['answer'])
-    # else:
-    #     st.info("🤖 Ask your doubts in the chatbot")
+                    bot_response = get_answers(st.session_state['restaurant'], st.session_state['question'])
+                    chat = [{"role": "user", "content": user_input},{"role": "assistant", "content": f':blue-background[{st.session_state['restaurant']}]: {bot_response}'}]
+                    st.session_state.messages.append(chat)
+
+                chat_container = st.container()
+                with chat_container:
+                    for chat in reversed(st.session_state.messages):
+                        with st.container(border=True):
+                            st.chat_message(chat[0]['role'], avatar="🧑").markdown(f'**{chat[0]['content']}**')
+                        
+                        st.chat_message(chat[1]['role'], avatar="🤖").markdown(chat[1]['content'])
 
 home()
