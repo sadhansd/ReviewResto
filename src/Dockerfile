@@ -1,6 +1,5 @@
 FROM python:3.10-slim
 WORKDIR /app
-COPY requirements.txt .
-COPY app.py .
+COPY . .
 RUN pip install -r requirements.txt
 CMD [ "streamlit","run", "app.py" ]
