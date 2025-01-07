@@ -3,12 +3,11 @@ import requests
 
 API_URL = 'http://127.0.0.1:8000/'
 
-
 def get_suggestions(query):
     response = requests.get(f'{API_URL}/suggest?query={query}')
     if response.status_code == 200:
         result = response.json()
-        return [i['restaurant_name'] for i in result['recommendations']]
+        return result['recommendations']
     else:
         st.error("Failed to fetch")
         return None
@@ -33,7 +32,7 @@ if "query" not in st.session_state:
     st.session_state['query'] = ""
     
 if "suggestion" not in st.session_state:
-    st.session_state['suggestion'] = []
+    st.session_state['suggestion'] = {}
     
 if "restaurant" not in st.session_state:
     st.session_state['restaurant'] = None
@@ -61,7 +60,9 @@ if col2.button("Search",icon='🔍'):
         st.warning("⚠️ Enter a valid query")
         
 if st.session_state['suggestion']:
-    restaurant = st.radio("select a restaurant", st.session_state['suggestion'])
+    res = [i['restaurant_name'] for i in st.session_state['suggestion']]
+    rev = [f'🙍‍♂️: {i['review']}' for i in st.session_state['suggestion']]
+    restaurant = st.radio("select a restaurant", res, captions=rev)
     st.session_state['restaurant'] = restaurant
             
     if st.session_state['restaurant']:
@@ -77,4 +78,4 @@ if st.session_state['suggestion']:
     else:
         st.warning("⚠️ select a valid restaurant")               
 else:
-    st.error("❌ No suggestions")
+    st.warning("⚠️ Enter a valid query")
