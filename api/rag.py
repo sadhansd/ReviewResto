@@ -46,7 +46,7 @@ def get_res_reviews(name):
 def get_summary(name):
     model = genai.GenerativeModel("gemini-1.5-flash")
     documents = get_res_reviews(name)
-    output_format = "output in json format(restaurant_name, must_try_dishes, highlights, things to note, overall conclusion, overall rating). the output should contain best dishes to try(if have data). highlights(if data available). points to keep in mind(if have negative data). at last overall conclusion and overall rating"
+    output_format = "output in json format(restaurant_name, must_try_dishes, highlights, things to note, conclusion, rating). the output should contain best dishes to try(if have data). highlights(if data available). points to keep in mind(if have negative data). at last overall conclusion and overall rating"
     prompt = f"You are a resturant suggestor. you provide summary of the given restaurant:'{name}' based on given reviews.\n\reviews:\n{''.join(documents)}. output format{output_format}"
     response = model.generate_content(prompt)
     return response.text
@@ -56,5 +56,12 @@ def restaurant_qna(name, query):
     documents = get_res_reviews(name)
     output_format = "json contains restaurant name and answer."
     prompt = f"You are a resturant suggestor.Answer the user's query:'{query} on a restaurant':'{name}' based on given reviews.\n\reviews:\n{''.join(documents)}. output format: {output_format}"
+    response = model.generate_content(prompt)
+    return response.text
+
+def general_qna(query):
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    output_format = "json contains answer."
+    prompt = f"Answer the user's general query:'{query} output in the provided format. output format: {output_format}"
     response = model.generate_content(prompt)
     return response.text

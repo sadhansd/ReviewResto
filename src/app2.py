@@ -3,6 +3,7 @@ import requests
 
 API_URL = 'http://127.0.0.1:8000/'
 
+@st.cache_data
 def get_suggestions(query):
     
     response = requests.get(f'{API_URL}/suggest?query={query}')
@@ -13,9 +14,12 @@ def get_suggestions(query):
         st.error("Failed to fetch")
         return None
 
-
+@st.cache_data
 def get_answers(res_name, user_query):
-    payload = {"query": user_query+f" in {res_name}"}
+    if res_name == 'general':
+        payload = {"query": user_query}
+    else:
+        payload = {"query": user_query+f" in {res_name}", "restaurant":res_name}
     response = requests.post(f'{API_URL}/query', json=payload)
     if response.status_code == 200:
         result = response.json()
@@ -24,6 +28,7 @@ def get_answers(res_name, user_query):
         st.error("Failed to fetch")
         return "No answers available"
 
+@st.cache_data
 def get_summary(res_name):
     response = requests.get(f'{API_URL}/summary/{res_name}')
     if response.status_code == 200:
@@ -81,7 +86,7 @@ def home():
             with st.expander(f'#### {i}'):
                 col1, col2 = st.columns([8,1])
                 summary = get_summary(i)
-                col1.info(summary['overall_conclusion'])
+                col1.info(summary['conclusion'])
                 # col2.metric('Rating',summary['overall_rating'].split(' ')[0])
                 tab1, tab2, tab3 = st.tabs(["Must try dishes", "Highlights", "Things to be noted"])
                 with tab1:
@@ -95,7 +100,7 @@ def home():
                         st.write(f'⚠️ {i}')
                 st.success("🤖 Ask your queries in the chatbot")
                 
-        restaurant = st.sidebar.pills('select a restaurant and ask queries', options=st.session_state['suggestion'], selection_mode="single")
+        restaurant = st.sidebar.pills('select a restaurant and ask queries', options=st.session_state['suggestion']+['general'], selection_mode="single")
         st.session_state['restaurant'] = restaurant
                 
         if st.session_state['restaurant']:
@@ -122,4 +127,5 @@ def chat_bot():
                         
                         st.chat_message(chat[1]['role'], avatar="🤖").markdown(chat[1]['content'])
 
-home()
+with st.spinner('Fetching your data...⌛'):
+    home()
