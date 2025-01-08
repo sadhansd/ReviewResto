@@ -29,10 +29,19 @@ jobs:
         with:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
-      - name: build and push image
+
+      - name: build and push app image
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: Dockerfile
+          file: ./src/Dockerfile
+          push: true
+          tags: ${{secrets.DOCKER_USERNAME}}/review_resto_app
+
+      - name: build and push api image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./api/Dockerfile
           push: true
           tags: ${{secrets.DOCKER_USERNAME}}/review_resto_app
