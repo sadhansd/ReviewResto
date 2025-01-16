@@ -1,7 +1,9 @@
 from elasticsearch import Elasticsearch
 es = Elasticsearch('http://localhost:9200/')
 import google.generativeai as genai
-genai.configure(api_key="AIzaSyC2u-JldV2UVXaQHqcXaYWt9zEp3Nk7wa0")
+import os
+API_KEY = os.environ['GEMINI_API_KEY']
+genai.configure(api_key=API_KEY )
 
 def create_embedding(text):
     result = genai.embed_content(model="models/text-embedding-004", content=text)

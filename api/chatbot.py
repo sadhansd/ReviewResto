@@ -3,8 +3,8 @@ from llama_index.core import Document, Settings, VectorStoreIndex, QueryBundle,S
 from llama_index.llms.gemini import Gemini
 from llama_index.embeddings.gemini import GeminiEmbedding
 
-API_KEY = 'AIzaSyC2u-JldV2UVXaQHqcXaYWt9zEp3Nk7wa0'
-
+import os
+API_KEY = os.environ['GEMINI_API_KEY']
 embed_model = GeminiEmbedding(model_name='models/text-embedding-004', api_key=API_KEY)
 Settings.embed_model = embed_model
 
