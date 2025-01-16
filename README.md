@@ -5,6 +5,7 @@ This project leverages Retrieval-Augmented Generation (RAG) to simplify the rest
 ![image](https://github.com/user-attachments/assets/22564154-11e7-4ef8-b8bb-2f7f50aa9d00)
 
 
-
+## Demonstration video
+https://youtu.be/xgMt_yz5F7Q
 
 
